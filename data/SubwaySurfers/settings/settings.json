@@ -1,0 +1,9 @@
+{
+    "ads": {
+      "enabled": false
+    },
+    "blocklist": "",
+    "country_exclusion": "",
+    "bidder_limitation": {}
+  }
+  

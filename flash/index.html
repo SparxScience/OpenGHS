@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self' data: blob:;
+        base-uri 'self';
+        script-src  'self' 'unsafe-inline' 'unsafe-eval' blob: data:;
+        connect-src 'self' https: wss:;
+        style-src 'self' 'unsafe-inline';
+        img-src     'self' data: blob:;
+        media-src   'self' data: blob:;
+        worker-src  'self' blob:;
+        frame-src   'self' blob:;
+        object-src  'none';
+        frame-ancestors 'none';
+      ">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Flash</title>
+  <style>
+    :root {
+      --ui-height: 56px;
+      --bg: #0b0b0b;
+      --panel: #111;
+      --muted: #9aa0a6;
+    }
+    html,body { height:100%; margin:0; background:var(--bg); color:#eee; font-family:Inter, system-ui, Arial, sans-serif; }
+    .topbar { position:fixed; top:0; left:0; right:0; height:var(--ui-height); display:flex; align-items:center; gap:12px; padding:8px 14px; background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4)); z-index:30; box-shadow:0 6px 20px rgba(0,0,0,0.6); }
+    .title { font-weight:600; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:60%; }
+    .controls { margin-left:auto; display:flex; gap:8px; align-items:center; }
+    .btn { background:var(--panel); border:1px solid rgba(255,255,255,0.04); color:#fff; padding:8px 10px; border-radius:6px; cursor:pointer; font-size:14px; }
+    .btn.secondary { background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); }
+    a.btn { text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+    .stage { position:absolute; top:var(--ui-height); bottom:0; left:0; right:0; display:grid; place-items:center; overflow:hidden; }
+    .viewport { background:#000; box-shadow:0 12px 40px rgba(0,0,0,0.7); aspect-ratio:var(--aspect,4/3); width:min(100vw,1200px); max-height:calc(100vh - var(--ui-height) - 24px); display:flex; align-items:center; justify-content:center; position:relative; }
+    .player { width:100%; height:100%; display:block; }
+    .message { color:var(--muted); text-align:center; font-size:15px; padding:12px; }
+    @media (max-width:640px) { .title{ max-width:42%; font-size:14px } .viewport{ width:calc(100vw - 20px) } .btn{ padding:7px 9px; font-size:13px } }
+  </style>
+</head>
+<body>
+  <div class="topbar" role="banner">
+    <div class="title" id="page-title">Loading…</div>
+    <button id="closeTitleBtn" class="btn secondary close-title" aria-label="Hide title" title="Hide title">✕</button>
+    <div class="controls" role="toolbar" aria-label="Player controls">
+      <button id="scaleBtn" class="btn secondary" title="Toggle scale mode (contain / cover)">Scale: contain</button>
+      <button id="fsBtn" class="btn" title="Fullscreen">Fullscreen</button>
+      <a id="openRaw" class="btn secondary" href="#" target="_blank" rel="noopener" title="Download SWF file directly">Download file</a>
+    </div>
+  </div>
+
+
+  <main class="stage" id="stage" role="main">
+    <div id="viewport" class="viewport" style="--aspect:4/3;">
+      <div id="playerWrap" class="player" aria-live="polite">
+        <!-- script will create a .message element here if needed -->
+      </div>
+    </div>
+  </main>
+
+  <!--Redirects all urls including sites listed to a local file.-->
+  <script src="assets/redirect.js"></script>
+
+  <!-- Ruffle: change src if you use a different path or CDN -->
+  <script src="assets/ruffle.js"></script>
+
+  <script>
+  /**************************************************************************
+   * CONFIG
+   * - DEFAULT_SWF_DIR: the folder that will be prepended when the path is short
+   * - DEFAULT_EXT: extension to add when missing (applies only for SWF autocompletion)
+   **************************************************************************/
+  const INDEX_JSON = 'index.json';
+  const DEFAULT_SWF_DIR = 'data/';    // <-- change to 'flash/' or 'swf/' depending on your layout
+  const DEFAULT_EXT = '.swf';
+
+  // default behavior controls
+  let scaleMode = 'contain'; // 'contain' (letterbox) or 'cover' (fill/crop)
+
+  // ---------- tiny DOM helpers ----------
+  const $ = sel => document.querySelector(sel);
+  const id = n => document.getElementById(n);
+
+  // ensure DOM ready and wire up close button
+  document.addEventListener('DOMContentLoaded', () => {
+    // wire up the close-title button (removes the title element)
+    const closeBtn = id('closeTitleBtn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        const titleEl = id('page-title');
+        if (titleEl) titleEl.remove();
+        closeBtn.remove();
+      });
+    }
+
+    // start main logic after DOM exists
+    main().catch(e => {
+      console.error('Player init error', e);
+      safeSetMessage('Initialization error: ' + (e && e.message ? e.message : e), true);
+    });
+  });
+
+
+  // create or update the loading message safely
+  function safeSetMessage(txt = '', isError = false) {
+    try {
+      let wrap = id('playerWrap');
+      if (!wrap) {
+        console.warn('playerWrap not found; creating container');
+        wrap = document.createElement('div');
+        wrap.id = 'playerWrap';
+        wrap.className = 'player';
+        id('viewport').appendChild(wrap);
+      }
+      let msg = id('loadingMessage');
+      if (!msg) {
+        msg = document.createElement('div');
+        msg.id = 'loadingMessage';
+        msg.className = 'message';
+        wrap.appendChild(msg);
+      }
+      msg.textContent = txt;
+      msg.style.color = isError ? '#ff8a8a' : '';
+    } catch (err) {
+      // never throw to caller
+      console.warn('safeSetMessage error', err);
+      try { console.log(txt); } catch(_) {}
+    }
+  }
+
+  function qs(key) {
+    const u = new URL(location.href);
+    return u.searchParams.get(key);
+  }
+  function slugify(s) {
+    if (!s) return '';
+    return s.toString().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  }
+
+  // Given a path string, return normalized SWF path (only applies to SWF autocompletion)
+  function normalizeSwfPath(rawPath) {
+    if (!rawPath) return null;
+    rawPath = rawPath.trim();
+    // If it's already an absolute URL or starts with '/', treat as-is (but still ensure extension)
+    const isAbsolute = /^https?:\/\//i.test(rawPath) || rawPath.startsWith('/');
+    // if it's already ending in .swf (case-insensitive) leave it, else add extension
+    const hasExt = /\.[a-z0-9]+$/i.test(rawPath);
+    const endsWithSwf = /\.swf$/i.test(rawPath);
+
+    // If it's absolute or contains a slash, but missing ext -> add .swf
+    if ((isAbsolute || rawPath.includes('/')) && !hasExt) {
+      return rawPath + DEFAULT_EXT;
+    }
+
+    // If it has extension but not .swf, do not change (we only auto-complete swf)
+    if (hasExt && !endsWithSwf) {
+      return rawPath;
+    }
+
+    // Otherwise it's a short name (no slash). Autocomplete using default folder + extension
+    if (!rawPath.includes('/')) {
+      // if user already typed a trailing .swf-less name like "handless", add extension
+      return DEFAULT_SWF_DIR + rawPath + (endsWithSwf ? '' : DEFAULT_EXT);
+    }
+
+    // fallback to returning original
+    return rawPath;
+  }
+
+  // Derive a human-friendly name from filename / path if no name provided
+  function deriveNameFromPath(path) {
+    if (!path) return '';
+    // drop query/hash
+    path = path.split('?')[0].split('#')[0];
+    const parts = path.split('/');
+    let fname = parts.pop();
+    // strip extension
+    fname = fname.replace(/\.[^.]+$/, '');
+    // replace underscores/dashes/plus with spaces, split camelCase boundaries
+    fname = fname.replace(/[_\-+]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
+    fname = fname.replace(/\s+/g, ' ').trim();
+    // title case (simple)
+    fname = fname.split(' ').map(w => w.length ? (w[0].toUpperCase() + w.slice(1)) : '').join(' ');
+    return fname || path;
+  }
+
+  // MAIN
+  async function main() {
+    safeSetMessage('Preparing player…');
+
+    const fileParam = qs('file');     // direct path (any path)
+    const gameParam = qs('game') || qs('id') || qs('name'); // lookup in index.json
+    const widthParam = qs('w');
+    const heightParam = qs('h');
+
+    // If width/height query provided, set aspect-ratio
+    if (widthParam && heightParam && !isNaN(+widthParam) && !isNaN(+heightParam)) {
+      id('viewport').style.setProperty('--aspect', `${widthParam}/${heightParam}`);
+    }
+
+    // Resolve SWF path + metadata
+    let swfPath = null;
+    let metadata = {};
+
+    // 1) direct file param has highest priority
+    if (fileParam) {
+      swfPath = decodeURIComponent(fileParam);
+      // if user passed a short name, normalize if looks like a SWF (we'll only add extension if it doesn't have other extension)
+      if (!/\.swf$/i.test(swfPath)) {
+        // only add .swf if the raw param has no extension OR user specified a simple token
+        // but we don't auto-prefix folder for explicit paths containing '/'
+        if (!/\.[a-z0-9]+$/i.test(swfPath)) {
+          // if no slash -> prefix default folder
+          swfPath = normalizeSwfPath(swfPath);
+        }
+      }
+      metadata.name = qs('title') || deriveNameFromPath(swfPath);
+    }
+
+    // 2) otherwise try to resolve via index.json using ?game=
+    if (!swfPath && gameParam) {
+      try {
+        safeSetMessage('Looking up "' + gameParam + '" in ' + INDEX_JSON + ' …');
+        const resp = await fetch(INDEX_JSON, {cache:'no-cache'});
+        if (!resp.ok) throw new Error('index.json not found (HTTP ' + resp.status + ')');
+        const data = await resp.json();
+
+        // normalize data to a flat games array
+        const games = [];
+        if (Array.isArray(data)) {
+          // could be array of categories or flat games
+          data.forEach(item => {
+            if (item && Array.isArray(item.games)) item.games.forEach(g => games.push(g));
+            else if (item && item.name && item.path) games.push(item);
+            else if (item && item.path && !item.games) games.push(item);
+          });
+        } else if (data && typeof data === 'object') {
+          if (Array.isArray(data.categories)) {
+            data.categories.forEach(cat => (cat.games || []).forEach(g => games.push(g)));
+          } else {
+            Object.keys(data).forEach(k => {
+              const arr = data[k];
+              if (Array.isArray(arr)) arr.forEach(g => games.push(g));
+            });
+          }
+        }
+
+        // search by exact name (case-insensitive), then slug, then path contains
+        const target = gameParam.trim().toLowerCase();
+        let found = games.find(g => (g.name || '').toLowerCase() === target || (g.path || '').toLowerCase() === target);
+        if (!found) {
+          const gslug = slugify(gameParam);
+          found = games.find(g => slugify(g.name || '') === gslug || (g.slug && slugify(g.slug) === gslug));
+        }
+        if (!found) {
+          found = games.find(g => (g.path || '').toLowerCase().includes(target) || (g.img || '').toLowerCase().includes(target));
+        }
+
+        if (found) {
+          // Accept both 'path' or 'file' keys from JSON
+          let candidate = found.path || found.file || found.href || '';
+          // ONLY apply SWF autocompletion when candidate either has .swf or missing ext and we expect it is a swf.
+          // We will try to normalize regardless; normalizeSwfPath is safe for non-swf too.
+          const normalized = normalizeSwfPath(candidate);
+          swfPath = normalized || candidate;
+          metadata = Object.assign({}, found);
+          // If JSON entry has no explicit name, derive from the (normalized) path
+          if (!metadata.name || !metadata.name.trim()) metadata.name = deriveNameFromPath(swfPath);
+          // If JSON entry includes width/height, set aspect ratio
+          if (found.width && found.height) id('viewport').style.setProperty('--aspect', `${found.width}/${found.height}`);
+        } else {
+          safeSetMessage('Game not found in index.json: ' + gameParam, true);
+        }
+      } catch (err) {
+        console.warn('Could not load index.json', err);
+        safeSetMessage('Could not read index.json: ' + (err && err.message ? err.message : 'error'), true);
+      }
+    }
+
+    // Still nothing? show instructions
+    if (!swfPath) {
+      const hint = 'No SWF specified. Use ?file=path/to/game.swf or ?game=Name (with index.json).';
+      safeSetMessage(hint, true);
+      document.title = 'SWF Player — No file';
+      id('page-title').textContent = 'No file specified';
+      return;
+    }
+
+    // Final normalization: ensure .swf ext for SWF files only when appropriate
+    // We'll try to detect if it's a SWF by extension or by default autocompletion heuristics.
+    if (!/\.swf$/i.test(swfPath)) {
+      // If the path has no extension -> assume it's an SWF and normalize
+      if (!/\.[a-z0-9]+$/i.test(swfPath)) {
+        swfPath = normalizeSwfPath(swfPath);
+      } else {
+        // some other extension exists (e.g., .html) — we won't change it
+      }
+    }
+
+    // Update title, UI
+    const finalName = metadata.name || deriveNameFromPath(swfPath);
+    document.title = finalName + ' — SWF Player';
+    id('page-title').textContent = finalName;
+    id('openRaw').href = swfPath;
+
+    // scale toggle UI helper
+    function applyScale() {
+      const vp = id('viewport');
+      if (!vp) return;
+      if (scaleMode === 'contain') {
+        id('scaleBtn').textContent = 'Scale: contain';
+        vp.style.width = 'min(100vw,1200px)';
+        vp.style.maxHeight = 'calc(100vh - var(--ui-height) - 24px)';
+        vp.style.alignItems = 'center';
+        vp.style.justifyContent = 'center';
+      } else {
+        id('scaleBtn').textContent = 'Scale: cover';
+        vp.style.width = '100vw';
+        vp.style.maxHeight = '100vh';
+        vp.style.alignItems = 'stretch';
+        vp.style.justifyContent = 'stretch';
+      }
+    }
+    applyScale();
+
+    // Load Ruffle
+    if (!window.RufflePlayer) {
+      safeSetMessage('Ruffle library not found at assets/ruffle.js — add Ruffle or update script path.', true);
+      return;
+    }
+
+    try {
+      safeSetMessage('Initializing Ruffle…');
+      const ruffle = window.RufflePlayer.newest();
+      const player = ruffle.createPlayer();
+      player.style.width = '100%';
+      player.style.height = '100%';
+
+      const wrap = id('playerWrap') || (function(){ const e = document.createElement('div'); e.id='playerWrap'; e.className='player'; id('viewport').appendChild(e); return e; })();
+      // drop previous children (including loading message)
+      wrap.innerHTML = '';
+      wrap.appendChild(player);
+      safeSetMessage('Loading ' + finalName + ' …');
+
+      // player.load accepts path or URL. Ruffle's load returns a Promise in many builds.
+      await player.load(swfPath);
+
+      // clear message after load success
+      safeSetMessage('', false);
+    } catch (err) {
+      console.error('Ruffle load error', err);
+      safeSetMessage('Failed to load SWF: ' + (err && err.message ? err.message : err), true);
+    }
+
+    // fullscreen toggle
+    id('fsBtn').addEventListener('click', async () => {
+      const vp = id('viewport');
+      try {
+        if (!document.fullscreenElement) await vp.requestFullscreen();
+        else await document.exitFullscreen();
+      } catch (err) { console.warn('Fullscreen error', err); }
+    });
+
+    // scale toggle
+    id('scaleBtn').addEventListener('click', () => {
+      scaleMode = (scaleMode === 'contain') ? 'cover' : 'contain';
+      applyScale();
+    });
+  }
+  </script>
+</body>
+</html>

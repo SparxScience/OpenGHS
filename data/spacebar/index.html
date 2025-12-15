@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Security-Policy"
+	content="
+  	default-src 'self' blob: data:;
+  	script-src  'self' 'unsafe-eval' 'unsafe-inline' blob:;
+  	connect-src 'self' wss:;
+	  img-src     'self' data: blob:;
+  	media-src   'self' data:;
+  	frame-src   'none';
+	">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spacebar Test</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta name="robots" content="noindex" />
+</head>
+<body translate="no">
+<div id="activity">
+
+<div id="timeSelector">
+<p>Choose Time:</p>
+<button id="5sec" onclick="setTime(5)">⏰  5 seconds </button>
+<button id="10sec" onclick="setTime(10)">⏰  10 seconds </button>
+<button id="20sec" onclick="setTime(20)">⏰  20 seconds </button>
+<button id="30sec" class="selectedBtn" onclick="setTime(30)">⏰  30 seconds </button>
+<button id="60sec" onclick="setTime(60)">⏰  60 seconds </button>
+</div>
+
+<p id="counter">✅ You have hit the spacebar <span class="hits">0</span> times.</p>
+<p id="scoreText">⚡ Your Spacebar Speed: <span id="score" class="speed">0</span> hits/second</p>
+
+<a id="startBtn" class="tryagain">START</a>
+<!-- <a id="restartBtn" href="#" onclick="resetHits()" class="tryagain">RESTART</a> -->
+</div>
+
+<script id="rendered-js">
+
+    
+// 10 sec timer --------------
+
+var startButton = document.getElementById("startBtn");
+var scoreText = document.getElementById("scoreText");
+var score = document.getElementById("score");
+var timeSelect = document.getElementById("timeSelector");
+var counter = 0;
+var selectedTimer = 30;
+var newElement = document.createElement("p");
+newElement.innerHTML = "⏰ Time: " +selectedTimer.toString() + " second."
+
+
+
+var keyTestButton = document.createElement("span");
+keyTestButton.innerHTML = "<button class='tryagain'>Try Keyboard Tester</button>";
+keyTestButton.addEventListener("click", function(){
+});
+
+var id;
+
+scoreText.style.display = 'none';
+startButton.parentNode.appendChild(newElement);
+
+function setTime(t) {
+    
+    selectedTimer = t;
+    newElement.innerHTML = "⏰ Time: " +selectedTimer.toString() + " second.";
+
+        document.getElementById("5sec").classList.remove('selectedBtn');
+        document.getElementById("10sec").classList.remove('selectedBtn');
+        document.getElementById("20sec").classList.remove('selectedBtn');
+        document.getElementById("30sec").classList.remove('selectedBtn');
+        document.getElementById("60sec").classList.remove('selectedBtn');
+        document.getElementById(t+"sec").classList.add("selectedBtn");
+               
+        
+                
+}
+
+function startTimer() {
+    startButton.style.display = 'none';
+    scoreText.style.display = 'none';
+    timeSelect.style.display = 'none';
+    newElement.style.display = 'block';
+    startButton.parentNode.appendChild(keyTestButton);
+    keyTestButton.style.display="none";
+    resetHits();
+   // startCounter();
+   
+    newElement.innerHTML = "⏰ Time: " +selectedTimer.toString() + " second.";
+   
+    counter = selectedTimer;
+    id = setInterval(function () {
+        counter--;
+        if (counter < 0) {
+            //newElement.parentNode.replaceChild(restartButton, newElement);
+            scoreText.style.display = 'block';
+            timeSelect.style.display = 'block';
+            score.innerHTML = (hits/selectedTimer).toFixed(2);
+            startButton.innerHTML = "RESTART";
+            keyTestButton.style.display="inline-block";
+            startButton.style.display = 'inline-block';
+            newElement.style.display = 'none';
+            
+            clearInterval(id);
+        } else {
+            newElement.innerHTML = "⏰ Time: " +counter.toString() + " second.";
+           
+        }
+    }, 1000);
+    
+};
+
+var clickbtn = document.getElementById("startBtn");
+clickbtn.onclick = startTimer;
+
+//10 sec timer end --------
+
+
+// Space Counter=------- 
+var hits = 0;
+var hitElement = document.querySelector('.hits');
+
+ document.body.onkeyup = function (e) {
+         if (e.keyCode == 32 && counter > 0) {
+                      addHit();
+                    }
+            };
+        
+
+var addHit = function () {
+  hits++;
+  renderHits();
+};
+var renderHits = function () {
+  hitElement.innerHTML = hits;
+};
+var resetHits = function () {
+  hits = 0;
+  renderHits();
+  
+};
+</script>
+</body>
+</html>

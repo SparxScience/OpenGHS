@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Security-Policy"
+	content="
+ 	   script-src  'self' 'unsafe-eval' 'unsafe-inline' blob:;
+    	connect-src 'self' wss:;
+		img-src     'self' data: blob:;
+    	media-src   'self' data:;
+    	frame-src   'none';
+  ">
+<script>var mobileAdsNum=0;</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta name="msapplication-config" content="/lib/favicon/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+<meta name="format-detection" content="telephone=no">
+<title>CPS Test - Click Speed Test</title>
+<meta content="CPS test. Click test. Click speed test. Clicker test. Clicks per second." name="description">
+<link href="css.css" rel="stylesheet">
+<style>
+   #curve_div { display:none; }
+   .adslot_2 { display:none; height:250px; }
+   h1 { font-size:1.6rem; }
+   h2 { font-size:1.4rem; }
+   #gen { max-width:500px; background:#eee8d5; padding:20px; border-radius:.25rem; touch-action: manipulation; }
+   #gen input { text-align:center; }
+   #navs { background:#fff; }
+   .btn-outline-success { font-weight:600; }
+   #addbtn { font-size:2.5rem; padding:2.8rem 1rem; }
+   #resetbtn { font-size:1.5rem; }
+   #outdiv,#tbldiv { display:none; }
+   #tbldiv { display:none; }
+   #cps { font-weight:600; }
+   #gen .btn span { vertical-align:bottom; }
+   #gen .input-group-append { background:#fff; }
+   #curve_div { width:100%; height:100px; border:1px solid #aaa; /*background:#f8f8f8;*/ }
+   #curve_chart { width:100%; height:100px; }
+   .stop-scroll { height:100%; overflow:hidden; }
+   .btn-secondary { color:#fff !important; }
+   .form-control-lg { font-size:1.5rem; font-weight:600; }
+   input::-webkit-outer-spin-button,
+   input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+   #addbtn {
+      position: relative;
+      overflow: hidden;
+      transition: background 400ms;
+      color: #fff;
+      font-size:2.5rem;
+      padding:2.5rem 1rem;
+      /*padding: 1rem 2rem;*/
+      outline: 0;
+      border: 0;
+      border-radius: 0.25rem;
+      box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      
+   }
+   #addbtn>span.ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple 500ms linear; /*600ms*/
+      background-color: rgba(255, 255, 255, 0.3); /*0.7*/
+   }
+   @keyframes ripple {
+      to {
+         transform: scale(4);
+         opacity: 0;
+      }
+   }
+   #tbl td { background:#fff; text-align: center; }
+   @media all and (max-width: 576px) {
+      .btn-group>a>span { display:none; }
+   }
+   @media (prefers-color-scheme: dark) {
+      body,h1,#nav,#nav a,#rcol a,#header a:hover { background:rgba(33,37,41); color:#fff;  }
+      #header,#footer,#header a,#footer a,#nav a:hover,.seealso { color:#fff; background:#414549; }
+      #header img { filter:invert(1); }
+      #doc img { filter:invert(0) !important; }
+      #rcol h5 { color:#000; }
+
+      #gen { background:#414549; color:#fff; }
+      #gen a,#gen input,#gen span { color:#fff; background:rgba(33,37,41); border:#000; }
+      #gen table th,#gen table td { color:#fff; background:rgba(33,37,41); border:#888; }
+      #navs,#gen .input-group-append { background:unset; }
+   }
+</style>
+<!-- #EndEditable -->
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+<div id="nav">
+	<a href="/">Home</a>&rsaquo;<a href="index.html">CPS test - Click speed test</a>
+</div>
+
+<div id="lcol">
+
+	<div id="doc">
+	<h1>CPS Test</h1>
+   <p>Click speed test - check clicks per second:</p>
+	<form id="gen">
+   <div id="navs" class="form-group btn-group">
+      <a href="index.html?t=1" class="btn btn-outline-success bold"><span>CPS </span>1 sec</a>
+      <a href="index.html?t=5" class="btn btn-outline-success"><span>CPS </span>5 sec</a>
+      <a href="index.html?t=10" class="btn btn-outline-success"><span>CPS </span>10 sec</a>
+      <a href="index.html?t=15" class="btn btn-outline-success"><span>CPS </span>15 sec</a>
+   </div>
+   <div class="form-group">
+      <label for="timer">Test time (seconds)</label>
+      <input type="number" min="1" max="100" step="1" value="5" id="timer" class="form-control form-control-lg" autofocus>
+   </div>
+   <div class="form-group">
+      <label for="count">Clicks</label>
+      <input type="number" step="any" value="0" id="count" class="form-control form-control-lg" readonly>
+   </div>
+   <div id="outdiv" class="form-row">
+   <div class="form-group col">
+      <label for="cps">Clicks per second</label>
+      <div class="input-group">
+      <input type="text" id="cps" class="form-control form-control-lg" readonly>
+      <div class="input-group-append">
+         <span class="input-group-text">cps</span>
+      </div>
+      </div>
+   </div>
+   <div class="form-group col">
+      <label for="cpm">Clicks per minute</label>
+      <div class="input-group">
+      <input type="text" id="cpm" class="form-control form-control-lg" readonly>
+      <div class="input-group-append">
+         <span class="input-group-text">cpm</span>
+      </div>
+      </div>
+   </div>
+   </div>
+   <div id="curve_div" class="form-group">
+      <div id="curve_chart"></div>
+   </div>
+   <div class="form-group">
+      <label>Click the + button to start:</label>
+      <button type="button" id="addbtn" onmouseup="onAdd(event)" oncontextmenu="return false;" class="btn btn-lg w-100 btn-success">+</button>
+   </div>
+   <div class="form-group mt-4">
+      <button type="button" id="resetbtn" title="New test" onclick="onReset()" class="btn w-100 btn-secondary"> new test</button>
+   </div>
+   <div id="tbldiv" class="form-group mt-4">
+      <p>Click test results history</p>
+      <table id="tbl" class="table">
+      <thead>
+      <tr>
+         <th>#</th>
+         <th>Test time<br>(seconds)</th>
+         <th>Clicks per<br>second (cps)</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+      </table>
+      <button type="button" title="Clear table" onclick="onTableClear()" class="btn btn-secondary mt-3">&times; Clear Table</button>
+   </div>
+   </form>
+   <br>
+   <h2>How to use the CPS test</h2>
+   <ol>
+      <li>Select test time in seconds or press one of the preset buttons.</li>
+      <li>Click the <b>+</b> button or spacebar until the test time reaches zero.</li>
+      <li>View the clicks per second (CPS) and clicks per minute (CPM) result values.</li>
+      <li>Click the new test button to restart test.</li>
+      <li>Check the click test results history table.</li>
+   </ol>
+	<br>
+	<hr>
+   <div id="adngin-bottom_01-0"></div>
+	</div>
+</div>
+</div>
+<script>
+"use strict";var params,scrollBarWidth,timeout,tstart,tend,dt,num=0,iskeyup=!0,duration=5,body=document.body,outdiv=document.getElementById("outdiv"),tbldiv=document.getElementById("tbldiv"),timer=document.getElementById("timer"),count=document.getElementById("count"),cpsElem=document.getElementById("cps"),cpmElem=document.getElementById("cpm"),addbtn=document.getElementById("addbtn"),curve_chart=document.getElementById("curve_chart"),cps=[],t=0,xdata=[["Time","Clicks"]],rows=0,results=[];function localLoad(){if("undefined"!=typeof Storage){var e=localStorage.getObject("click-test");if(null!=e){void 0!==e.timer&&e.timer>=1&&(timer.value=e.timer),void 0!==e.results&&(results=e.results);for(var l=0;l<results.length;l++)AddRow()}}}function localSave(){if("undefined"!=typeof Storage){var e={timer:duration,results:results};localStorage.setObject("click-test",e)}}function getScrollbarWidth(){let e=document.createElement("div");e.style.visibility="hidden",e.style.overflow="scroll",e.style.msOverflowStyle="scrollbar",document.body.appendChild(e);let l=document.createElement("div");e.appendChild(l);let i=e.offsetWidth-l.offsetWidth;return e.parentNode.removeChild(e),i}function GetURLParams(){for(var e,l=window.location.href,i=/[?&]([^=#]+)=([^&#]*)/g,n={};e=i.exec(l);)n[e[1]]=e[2];return n}function updateURL(){var e=window.location.href.split("?")[0];e+="?t="+timer.value,history.replaceState({},"",e)}function onAdd(e){0==num&&(tstart=Date.now(),timeout=setTimeout(function(){onTime()},1e3),duration=timer.value,timer.disabled=!0,document.body.style.overflow="hidden",document.body.style.paddingRight=scrollBarWidth+"px"),timer.value>0&&(count.value=++num),cps[t]++,createRipple(e),"vibrate"in navigator&&navigator.vibrate(13)}function AddRow(){var e=document.getElementById("tbl").getElementsByTagName("tbody")[0].insertRow(rows),l=rows+1;e.innerHTML="<tr>         <td>"+l+"</td>         <td>"+results[rows].t+"</td>         <td>"+results[rows].cps+"</td>      </tr>",rows++,tbldiv.style.display="block"}function onTableClear(){document.getElementById("tbl").getElementsByTagName("tbody")[0].innerHTML="",rows=0,results=[]}function onReset(){num=0,t=0,timer.value=duration,void 0!==params.data&&(timer.value=params.t),count.value=0,cpsElem.value="",cpmElem.value="",addbtn.disabled=!1,clearTimeout(timeout),timer.disabled=!1,document.body.style.overflow="visible",document.body.style.paddingRight="0px",xdata=[["Time","Clicks"]];for(var e=0;e<100;e++)cps[e]=0;curve_chart.style.display="none",outdiv.style.display="none",tbldiv.style.display="none"}function onTime(){timer.value>1&&(timeout=setTimeout(function(){onTime()},1e3-(dt=(Date.now()-tstart)%1e3))),timer.value--,t++,cpsElem.value=(count.value/t).toFixed(2),cpmElem.value=(60*count.value/t).toFixed(2),0==timer.value&&(addbtn.disabled=!0,tend=Date.now(),document.body.style.overflow="visible",cpsElem.focus(),outdiv.style.display="flex",results[rows]={},results[rows].t=duration,results[rows].cps=cpsElem.value,AddRow(),outdiv.style.display="block",tbldiv.style.display="block")}function createRipple(e){let l=document.createElement("span"),i=Math.max(addbtn.clientWidth,addbtn.clientHeight),n=i/2;l.style.width=l.style.height=`${i}px`,l.style.left=`${e.clientX-(addbtn.offsetLeft+n)}px`,l.style.top=`${e.clientY-(addbtn.getBoundingClientRect().top+n)}px`,l.classList.add("ripple");let d=addbtn.getElementsByClassName("ripple")[0];d&&d.remove(),addbtn.appendChild(l)}document.addEventListener("visibilitychange",function(){"hidden"===document.visibilityState&&localSave()}),window.addEventListener("DOMContentLoaded",function(){if(document.onkeydown=function(e){!0==iskeyup&&("Space"==e.code||32==e.keyCode)&&(e.preventDefault(),iskeyup=!1,onAdd(e))},document.onkeyup=function(e){iskeyup=!0},timer.oninput=function(){updateURL()},localLoad(),void 0!==(params=GetURLParams()).t){if(params.t<1)return;let e=document.querySelector("#doc>h1");var l=params.t;l+=1==params.t?" Second CPS Test":" Seconds CPS Test",e.innerHTML=l,document.title=l,timer.value=params.t}for(var i=0;i<100;i++)cps[i]=0;scrollBarWidth=getScrollbarWidth()}),Storage.prototype.setObject=function(e,l){this.setItem(e,JSON.stringify(l))},Storage.prototype.getObject=function(e){var l=this.getItem(e);return null==l||"undefined"==l?null:l&&JSON.parse(l)};
+</script>
+</body>
+</html>

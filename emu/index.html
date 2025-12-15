@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Security-Policy"
+      content="
+        script-src  'self' 'unsafe-eval' 'unsafe-inline' blob:;
+        connect-src 'self' wss: blob:;
+        img-src     'self' data: blob:;
+        media-src   'self' data:;
+        frame-src   'none';
+      ">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Emulator Player</title>
+  </head>
+  <body>
+    <div style="width:100vw;height:100vh;max-width:none;position:absolute;top:0px;left:0px;">
+        <div id="game"></div>
+    </div>
+
+<script type="text/javascript">
+/*
+  Enhanced emu/index.html bootstrap:
+  - URL params: file, title, core
+  - Priority for game file:
+      1) file URL parameter (if present)
+      2) if running as emu player AND a matching index.json entry has `url`, use entry.url
+      3) otherwise use normalized file (param or fallback)
+  - Priority for core: paramCore -> index.json entry keys (core/system/platform/engine) -> infer from ext -> inline fallback
+  - Title lookup: param -> index.json -> derive from filename
+  - All globals set BEFORE loader.js is loaded
+*/
+
+(function(){
+  // --- Utilities ---
+  function qs(name){
+    try { return new URL(window.location.href).searchParams.get(name); }
+    catch(e) { return null; }
+  }
+
+  function deriveNameFromPath(path){
+    if(!path) return '';
+    path = path.split('?')[0].split('#')[0];
+    const parts = path.split('/');
+    let fname = parts.pop() || path;
+    fname = fname.replace(/\.[^.]+$/,'');
+    fname = fname.replace(/[_\-+]+/g,' ').replace(/([a-z])([A-Z])/g,'$1 $2');
+    fname = fname.replace(/\s+/g,' ').trim();
+    return fname.split(' ').map(w => w? (w[0].toUpperCase()+w.slice(1)) : '').join(' ') || path;
+  }
+
+  function normalizeFileForEmu(raw){
+    if(!raw) return raw;
+    raw = String(raw).trim();
+    if(/^https?:\/\//i.test(raw)) return raw;     // absolute URL
+    if(raw.startsWith('/')) return raw;          // site-root absolute
+    // strip leading emu/ or ./emu/ because player lives in emu/
+    return raw.replace(/^(\.\/|\/)?emu\//i,'').replace(/^\.\//,'');
+  }
+
+  function inferCoreFromExt(path){
+    if(!path) return '';
+    const ext = path.split('?')[0].split('#')[0].split('.').pop().toLowerCase();
+    const map = {
+      'n64':'n64','z64':'n64','v64':'n64',
+      'nes':'nes','fds':'nes',
+      'sfc':'snes','smc':'snes',
+      'gba':'gba','gb':'gb','gbc':'gbc',
+      'nds':'nds',
+      'iso':'psx','bin':'psx','cue':'psx',
+      'nsp':'switch','xci':'switch',
+      'rom':'rom','zip':'zip'
+    };
+    return map[ext] || '';
+  }
+
+  // Normalize strings for compare: strip emu/, ./ and make lowercase
+  function normForCompare(p){
+    return String(p || '').replace(/^(\.\/|\/)?emu\//i,'').replace(/^\.\//,'').toLowerCase();
+  }
+
+  // Flatten index.json into an array of game objects (robust)
+  function flattenIndex(json){
+    const out = [];
+    (function collect(obj){
+      if(!obj) return;
+      if(Array.isArray(obj)) return obj.forEach(i=>collect(i));
+      if(typeof obj === 'object') {
+        if(Array.isArray(obj.games)) {
+          obj.games.forEach(g => out.push(g));
+        } else if(obj.path || obj.url) {
+          // treat objects with path or url as a game entry
+          out.push(obj);
+        } else {
+          Object.keys(obj).forEach(k => collect(obj[k]));
+        }
+      }
+    })(json);
+    return out;
+  }
+
+  // Try to find a game entry in index.json matching fileToken. Returns the matched object or null.
+  async function findEntryInIndex(fileToken){
+    if(!fileToken) return null;
+    const candidates = ['../index.json','/index.json'];
+    const t = normForCompare(fileToken);
+    const base = s => (String(s||'').split('/').pop().split('?')[0].split('#')[0]).toLowerCase();
+
+    for(const url of candidates){
+      try {
+        const res = await fetch(url, {cache:'no-cache'});
+        if(!res.ok) continue;
+        const json = await res.json();
+        const games = flattenIndex(json);
+        // attempt to find best match
+        const match = games.find(g=>{
+          if(!g) return false;
+          const gp = normForCompare(g.path || g.url || '');
+          if(gp && t && gp === t) return true;                       // exact normalized
+          if(base(gp) && base(t) && base(gp) === base(t)) return true; // same basename
+          if(gp && t && (gp.endsWith(t) || t.endsWith(gp))) return true; // endsWith
+          return false;
+        });
+        if(match) return match;
+      } catch(e) {
+        // ignore and try next candidate
+      }
+    }
+    return null;
+  }
+
+  // Determine if current page is the emu player (path contains /emu/index.html or ends with /emu/ or /emu)
+  function isEmuPlayerPath(){
+    try {
+      const path = window.location.pathname || '';
+      // normalize trailing slashes
+      const p = path.replace(/\/+$/,'');
+      return /\/emu(\/index\.html)?$/i.test(p);
+    } catch(e){ return false; }
+  }
+
+  // --- Start: determine file / title / core ---
+  // preserve any inline variables (old hardcoded fallback)
+  var fallback_gameUrl = (typeof EJS_gameUrl !== 'undefined') ? EJS_gameUrl : null;
+  var fallback_core = (typeof EJS_core !== 'undefined') ? EJS_core : null;
+  var fallback_pathtodata = (typeof EJS_pathtodata !== 'undefined') ? EJS_pathtodata : 'assets/';
+
+  var paramFile = qs('file');
+  var paramTitle = qs('title');
+  var paramCore = qs('core');
+
+  // chosenFileRaw represents what we were asked to load (param or inline fallback)
+  const chosenFileRaw = paramFile || fallback_gameUrl || null;
+  if(!chosenFileRaw){
+    // nothing to load
+    document.title = 'No file specified';
+    document.getElementById('game').innerHTML = '<p style="color:#900;margin:20px;">No <code>file</code> parameter provided and no fallback ROM available.</p>';
+    return;
+  }
+
+  const normalizedFile = normalizeFileForEmu(chosenFileRaw);
+  const pageIsEmu = isEmuPlayerPath();
+
+  // We'll determine core in priority order: paramCore -> index.json -> infer -> fallback_core
+  (async function bootstrap(){
+    // Attempt to find matching entry in index.json (if any)
+    let matchedEntry = null;
+    try {
+      matchedEntry = await findEntryInIndex(chosenFileRaw);
+    } catch(e){ matchedEntry = null; }
+
+    // --- determine title ---
+    let titleVal = paramTitle || null;
+    if(!titleVal && matchedEntry) {
+      titleVal = matchedEntry.name || matchedEntry.title || matchedEntry.label || null;
+    }
+    if(!titleVal) titleVal = deriveNameFromPath(chosenFileRaw);
+    document.title = titleVal || 'Emulator Player';
+
+    // --- determine which file/URL to actually load ---
+    // Priority:
+    // 1) explicit ?file= param (we honor it)
+    // 2) if running as emu player AND matchedEntry.url exists -> use entry.url
+    // 3) otherwise use normalizedFile
+    let finalGameUrl = null;
+    if(paramFile) {
+      finalGameUrl = normalizeFileForEmu(paramFile);
+    } else if(pageIsEmu && matchedEntry && matchedEntry.url) {
+      // Use the entry.url when we're running the emu player page
+      finalGameUrl = String(matchedEntry.url).trim();
+    } else {
+      finalGameUrl = normalizedFile;
+    }
+
+    // --- determine core ---
+    let coreVal = paramCore || null;
+    if(!coreVal && matchedEntry){
+      coreVal = matchedEntry.core || matchedEntry.system || matchedEntry.platform || matchedEntry.engine || null;
+    }
+    if(!coreVal) coreVal = inferCoreFromExt(finalGameUrl) || null;
+    if(!coreVal && fallback_core) coreVal = fallback_core;
+
+    // --- set globals expected by loader ---
+    window.EJS_player = window.EJS_player || '#game';
+    window.EJS_gameUrl = finalGameUrl;
+    if(coreVal) window.EJS_core = coreVal;
+    window.EJS_pathtodata = window.EJS_pathtodata || fallback_pathtodata || 'assets/';
+
+    // Optional lightweight title overlay for user feedback
+    // Optional lightweight title overlay for user feedback (with close button + Esc)
+    try {
+      const hdr = document.createElement('div');
+      Object.assign(hdr.style, {
+        position: 'absolute',
+        left: '8px',
+        top: '8px',
+        zIndex: '9999',
+        background: 'rgba(0,0,0,0.6)',
+        color: 'white',
+        padding: '6px 10px',
+        borderRadius: '6px',
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '14px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      });
+
+      const titleSpan = document.createElement('span');
+      titleSpan.textContent = titleVal || '';
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.setAttribute('aria-label', 'Close overlay');
+      closeBtn.innerHTML = '✕';
+      Object.assign(closeBtn.style, {
+        background: 'transparent',
+        border: 'none',
+        color: 'white',
+        cursor: 'pointer',
+        fontSize: '12px',
+        lineHeight: '1',
+        padding: '2px 6px',
+        borderRadius: '4px'
+      });
+
+      // remove function + cleanup
+      function removeHdr() {
+        try { hdr.remove(); } catch(e){}
+        window.removeEventListener('keydown', onKey);
+      }
+      function onKey(e){
+        if (e.key === 'Escape' || e.key === 'Esc') removeHdr();
+      }
+
+      closeBtn.addEventListener('click', removeHdr);
+      window.addEventListener('keydown', onKey);
+
+      hdr.appendChild(titleSpan);
+      hdr.appendChild(closeBtn);
+      document.body.appendChild(hdr);
+    } catch(e){}
+
+
+    // Inject loader.js once (synchronous so loader sees globals)
+    const s = document.createElement('script');
+    s.src = 'assets/loader.js';
+    s.async = false;
+    document.body.appendChild(s);
+  })();
+
+})();
+</script>
+
+  </body>
+</html>

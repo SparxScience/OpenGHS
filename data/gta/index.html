@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Security-Policy"
+	content="
+    default-src 'self' blob: data:;
+    script-src  'self' 'unsafe-eval' 'unsafe-inline' blob:;
+    connect-src 'self' wss:;
+		img-src     'self' data: blob:;
+    media-src   'self' data:;
+    frame-src   'none';
+	">
+<link rel="stylesheet" href="uploads/style.css">
+    <script src="uploads/UnityProgress.js"></script>
+    <script src="uploads/unityloader05.js"></script>
+
+    <script>
+      var gameInstance = UnityLoader.instantiate("gameContainer", "uploads/actionsim.json", {onProgress: UnityProgress,Module:{onRuntimeInitialized: function() {UnityProgress(gameInstance, "complete")}}});
+    </script>
+    <div class="webgl-content">
+        <div id="gameContainer" style="width: 100%; height: 100%; margin: auto"></div>
+        </div>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-146349913-1');
+</script>

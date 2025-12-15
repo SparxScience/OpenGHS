@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<head>
+    <title>Games</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow items to wrap to the next line */
+            justify-content: center; /* Center the content */
+            gap: 20px; /* Space between buttons */
+            margin: 20px auto;
+            max-width: 1200px; /* Limit the max width of the container */
+        }
+
+        .game-button {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 10px 10px;
+            width: 180px; /* Fixed width for buttons */
+            text-decoration: none;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .game-button img {
+            width: 150px; /* Adjust size of the image */
+            height: 150px;
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            margin: 0 auto;
+            width: 100%;
+        }
+        body {
+            text-align: center;
+            margin: 0 auto;
+            width: 100%;
+        }
+    </style>
+    <meta http-equiv="Content-Security-Policy"
+        content="
+            default-src 'self' blob: data:;
+            script-src  'self' 'unsafe-eval' 'unsafe-inline' blob:;
+            connect-src 'self' blob: wss:;
+            img-src     'self' data: blob:;
+            media-src   'self' data: blob:;
+            worker-src  'self' blob:;
+            frame-src   'none';
+        ">
+</head>
+
+<body>
+    <div style="margin:0 auto;text-align:center">
+        <p>Welcome to OpenGHS, this is a website dedicated to providing ad-free games..</p>
+        <p>We provide the source code of the site for free and just hate megacorporations and ad-infested game sites.</p>
+        <p>All Games and assets are provided in-site exept multiplayer Games, we only have access to client side code, and FNAF.</p>
+        <p>Everything <i>should</i> work. If something goes wrong please report an error at the <a href="https://github.com/SparxScience/Home">Github.</a> Thanks and Enjoy.</p>
+
+        <!-- Container where categories will be injected -->
+        <main id="main-content" aria-live="polite">
+            <p class="muted" id="loading-note">Loading games from <code>index.json</code>…</p>
+        </main>
+        </div>
+        <footer>
+            <p>----------------------------------------------------------------</p>
+            <p class="aligncenter">
+                <img src="assets/download.gif" alt="hey bozo we're under construction!!" />
+            </p>
+            <p>More Backups Coming Soon...</p>
+
+            <h4>Official Backups:</h4>
+            <a href="https://boredmath.github.io/cbf/">1</a> - <a href="https://chiboga.github.io/chilibowlflash/">2</a>
+            <p></p>
+            <p><a href="assets/changelog.html">What's New</a></p>
+            <p><a href="assets/credits.html">Credits</a></p>
+        </footer>
+    </div>
+    
+    <script>
+      /* CONFIG */
+      const INDEX_JSON = 'index.json';
+      const DEFAULT_SWF_DIR = 'data/';
+      const DEFAULT_SWF_EXT = '.swf';
+      const SWF_PLAYER = 'flash/index.html';
+      
+      /* UTILITIES */
+      function safeText(node, s){ node.textContent = s || ''; }
+      function slugify(s){
+        if(!s) return '';
+        return s.toString().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+      }
+      function deriveNameFromPath(path){
+        if(!path) return '';
+        path = path.split('?')[0].split('#')[0];
+        const parts = path.split('/');
+        let fname = parts.pop();
+        fname = fname.replace(/\.[^.]+$/,'');
+        fname = fname.replace(/[_\-+]+/g,' ').replace(/([a-z])([A-Z])/g,'$1 $2');
+        fname = fname.replace(/\s+/g,' ').trim();
+        fname = fname.split(' ').map(w => w? (w[0].toUpperCase()+w.slice(1)) : '').join(' ');
+        return fname || path;
+      }
+      // Normalize a SWF path token -> full path. Only used for SWF autocompletion.
+      function normalizeSwfPath(raw){
+        if(!raw) return raw;
+        raw = raw.trim();
+        if(/^https?:\/\//i.test(raw) || raw.startsWith('/')){
+          return /\.swf$/i.test(raw) ? raw : raw + DEFAULT_SWF_EXT;
+        }
+        if(/\.[a-z0-9]+$/i.test(raw)){
+          return raw;
+        }
+        return DEFAULT_SWF_DIR + raw + DEFAULT_SWF_EXT;
+      }
+      
+      /* Normalize emu file param:
+         - If path contains a protocol or leading slash, keep it (absolute).
+         - If path points into emu/, strip the leading emu/ (so emu/index.html can use a relative path).
+         - Otherwise leave relative path as-is. */
+      function makeEmuFileParam(rawPath, nameFallback){
+        if(!rawPath) rawPath = nameFallback || '';
+        rawPath = String(rawPath).trim();
+        if(/^https?:\/\//i.test(rawPath) || rawPath.startsWith('/')) {
+          return rawPath;
+        }
+        // Remove leading ./ or / and remove leading emu/ if present
+        return rawPath.replace(/^(\.\/|\/)?emu\//i,'').replace(/^\.\//,'');
+      }
+    
+      /* Helper: does the provided raw path actually start with "emu/" (allow leading ./ or /) ? */
+      function pathStartsWithEmu(rawPath){
+        if(!rawPath) return false;
+        // trim whitespace, then strip a single leading ./ or / for checking
+        const p = String(rawPath).trim().replace(/^(\.\/|\/)+/,'');
+        return /^emu\//i.test(p);
+      }
+      
+      /* DOM creation for a category section */
+      function createCategorySection(category){
+        const section = document.createElement('section');
+      
+        const heading = document.createElement('h3');
+        heading.textContent = category.title || 'Games';
+        section.appendChild(heading);
+      
+        const container = document.createElement('div');
+        container.className = 'game-container';
+      
+        const games = Array.isArray(category.games) ? category.games : [];
+      
+        games.forEach(game => {
+          const name = game.name || deriveNameFromPath(game.path) || 'Untitled';
+          const imgSrc = (game.img && (game.img.startsWith('http://') || game.img.startsWith('https://') || game.img.startsWith('/'))) ? game.img : (game.img ? ('img/' + game.img) : 'img/placeholder.png');
+      
+          // determine whether this is a SWF entry
+          const isSwf = (game.swf === true) || (/\.swf$/i.test(String(game.path || '')));
+      
+          // Build anchor
+          const a = document.createElement('a');
+          a.className = 'game-button';
+          a.setAttribute('aria-label', name);
+      
+          if(isSwf){
+            const rawPath = String(game.path || '').trim() || slugify(name);
+            const normalized = normalizeSwfPath(rawPath);
+            const playerUrl = SWF_PLAYER + '?file=' + encodeURIComponent(normalized) + '&title=' + encodeURIComponent(name);
+            a.href = playerUrl;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+          } else {
+            // Non-SWF: only route to emu player if the path actually starts with "emu/"
+            const rawPath = String(game.path || '').trim() || slugify(name);
+    
+            if(pathStartsWithEmu(rawPath)){
+              // make param relative to emu/ (strip the leading emu/ because emu/index.html expects paths relative to itself)
+              const emuPath = makeEmuFileParam(rawPath, name);
+              a.href = 'emu/index.html?file=' + encodeURIComponent(emuPath) + '&title=' + encodeURIComponent(name);
+            } else {
+              // Otherwise link directly to the provided path:
+              // - absolute http(s) stays as-is
+              // - site-root paths (starting with /) stay as-is
+              // - other relative paths are used directly (relative to the gallery page)
+              a.href = (rawPath && String(rawPath).length) ? rawPath : '#';
+            }
+            // open in same tab by default
+          }
+      
+          // Build inner contents
+          const img = document.createElement('img');
+          img.src = imgSrc;
+          img.alt = name;
+      
+          const label = document.createElement('div');
+          label.textContent = name;
+      
+          a.appendChild(img);
+          a.appendChild(label);
+          container.appendChild(a);
+        });
+      
+        section.appendChild(container);
+        return section;
+      }
+      
+      /* Render index.json */
+      function renderFromIndex(data){
+        const main = document.getElementById('main-content');
+        main.innerHTML = '';
+      
+        let categories = [];
+      
+        if(Array.isArray(data)){
+          if(data.length && data[0] && data[0].games) categories = data;
+          else categories = [{ title: 'Games', games: data }];
+        } else if(data && typeof data === 'object'){
+          if(Array.isArray(data.categories)) categories = data.categories;
+          else categories = Object.keys(data).map(key => ({ title: key, games: Array.isArray(data[key]) ? data[key] : [] }));
+        }
+      
+        if(!categories.length){
+          main.innerHTML = '<p class="muted">No games found in index.json.</p>';
+          return;
+        }
+      
+        categories.forEach(cat => main.appendChild(createCategorySection(cat)));
+      }
+      
+      /* Load index.json and render */
+      (function loadIndex(){
+        fetch(INDEX_JSON, {cache:'no-cache'}).then(r=>{
+          if(!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        }).then(json=>{
+          renderFromIndex(json);
+        }).catch(err=>{
+          const main = document.getElementById('main-content');
+          main.innerHTML = '';
+          const errBox = document.createElement('div');
+          errBox.className = 'error';
+          errBox.innerHTML = '<strong>Could not load <code>index.json</code></strong>'
+            + '<p class="muted">Make sure index.json exists and is valid JSON in the same folder as this page.</p>'
+            + '<p class="muted">Error: ' + (err && err.message ? err.message : 'unknown') + '</p>';
+          main.appendChild(errBox);
+          console.warn('Failed to load index.json:', err);
+        });
+      })();
+    </script>    
+</body>
+
+</html>

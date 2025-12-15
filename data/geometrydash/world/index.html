@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <title>Geometry Dash World</title>
+  <style>
+  html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+  }
+
+  #gameContainer {
+      width: 100vw !important;
+      height: 100vh !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      overflow: hidden !important;
+      background: black;
+  }
+
+  #unity-canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+  }
+
+  /* Pixel-art mode */
+  #unity-canvas[data-pixel-art="true"] {
+      image-rendering: pixelated;
+  }
+
+  /* Fullscreen loader overlay */
+  #loaderOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+  }
+
+  /* Center image while loading */
+  #loaderOverlay img {
+      max-width: 30%;
+      height: auto;
+      margin-bottom: 40px;
+  }
+
+  /* Progress bar container */
+  #progressBarContainer {
+      width: 50%;
+      height: 30px;
+      background: #555;
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+  }
+
+  /* Progress bar fill */
+  #progressBarFill {
+      width: 0%;
+      height: 100%;
+      background: #0f0;
+      transition: width 0.2s ease;
+  }
+
+  /* Percentage text */
+  #progressPercentage {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      line-height: 30px;
+      color: white;
+      font-family: sans-serif;
+      font-weight: bold;
+      pointer-events: none;
+  }
+</style>
+<meta http-equiv="Content-Security-Policy"
+        content="
+          default-src 'self' blob: data:;
+          script-src  'self' 'unsafe-eval' 'unsafe-inline' blob:;
+          connect-src 'self' blob: wss:;
+          img-src     'self' data: blob:;
+          media-src   'self' data: blob:;
+          worker-src  'self' blob:;
+          frame-src   'none';
+        ">
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="unity-canvas" data-pixel-art=""></canvas>
+
+    <div id="loaderOverlay">
+      <img src="Build.jpg" alt="Loading..." />
+      <div id="progressBarContainer">
+        <div id="progressBarFill"></div>
+        <div id="progressPercentage">0%</div>
+      </div>
+    </div>
+
+    <!-- Unity loader must be loaded before we call createUnityInstance -->
+    <script src="Build/Build.loader.js"></script>
+
+    <script>
+      // progress elements
+      const progressBarFill = document.getElementById("progressBarFill");
+      const progressPercentage = document.getElementById("progressPercentage");
+      const loaderOverlay = document.getElementById("loaderOverlay");
+      
+      UnityLoader.instantiate(
+        "gameContainer",              // container id (or element)
+        "Build/Build.json",           // build JSON (check this file exists)
+        {
+          onProgress: function(unityInstance, progress) {
+            const percent = Math.round(progress * 100);
+            progressBarFill.style.width = percent + "%";
+            progressPercentage.textContent = percent + "%";
+          },
+          // optional hooks:
+          onsuccess: function(module) {
+            loaderOverlay.style.display = "none";
+            window.unityModule = module; // if you need access later
+          },
+          onerror: function(err) {
+            console.error("Unity instantiate error:", err);
+          }
+        }
+      );
+    </script>    
+  </div>
+</body>
+</html>

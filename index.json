@@ -1,0 +1,777 @@
+[
+  {
+    "title": "Flash Games",
+    "games": [
+      {
+        "name": "Alien Hominid",
+        "path": "data/alien_hominid.swf",
+        "img": "alien.jpg"
+      },
+      {
+        "name": "Age Of War",
+        "path": "data/age_of_war.swf",
+        "img": "ageofwar.jpg"
+      },
+      {
+        "name": "Apple Shooter",
+        "path": "data/apple_shooter.swf",
+        "img": "appleshoot.jpg"
+      },
+      {
+        "name": "Asteroids",
+        "path": "data/asteroids.swf",
+        "img": "assroid.jpg"
+      },
+      {
+        "name": "Abobbos Big Adventure",
+        "path": "data/abobbos-big-adventure.swf",
+        "img": "bigadventure.jpg"
+      },
+      {
+        "name": "Bad Piggies",
+        "path": "data/bad-piggies.swf",
+        "img": "badpig.jpg"
+      },
+      {
+        "name": "Bloxors",
+        "path": "data/bloxorz.swf",
+        "img": "bloxorz.jpg"
+      },
+      {
+        "name": "Bloody Rage",
+        "path": "data/bloodyrage.swf",
+        "img": "bloodyrage.jpg"
+      },
+      {
+        "name": "Bloons Tower Defence",
+        "path": "data/bloonstd.swf",
+        "img": "bloons.jpg"
+      },
+      {
+        "name": "Bubble Shooter",
+        "path": "data/bubble-shooter.swf",
+        "img": "bubble.jpg"
+      },
+      {
+        "name": "Color Combat",
+        "path": "data/color_combat.swf",
+        "img": "colorcombat.jpg"
+      },
+      {
+        "name": "Commando",
+        "path": "data/commando.swf",
+        "img": "commando.jpg"
+      },
+      {
+        "name": "Cubefield",
+        "path": "data/cubefield.swf",
+        "img": "cube.jpg"
+      },
+      {
+        "name": "Dad n' Me",
+        "path": "data/dadnme.swf",
+        "img": "dadnme.jpg"
+      },
+      {
+        "name": "Donkey Kong",
+        "path": "data/Donkey-Kong.swf",
+        "img": "kong.jpg"
+      },
+      {
+        "name": "Doom",
+        "path": "data/doom.swf",
+        "img": "doom.jpg"
+      },
+      {
+        "name": "Duck Life",
+        "path": "data/ducklife.swf",
+        "img": "ducklife.jpg"
+      },
+      {
+        "name": "Duck Life 2",
+        "path": "data/ducklife2.swf",
+        "img": "ducklife2.jpg"
+      },
+      {
+        "name": "Ducklife 3",
+        "path": "data/ducklife3.swf",
+        "img": "ducklife3.jpg"
+      },
+      {
+        "name": "Defend Your Castle",
+        "path": "data/castle.swf",
+        "img": "castle.jpg"
+      },
+      {
+        "name": "Duck Hunt",
+        "path": "data/duckhunt.swf",
+        "img": "duckhunt.jpg"
+      },
+      {
+        "name": "Electricman 2",
+        "path": "data/electricman2.swf",
+        "img": "eman2.jpg"
+      },
+      {
+        "name": "Escaping the Prison",
+        "path": "data/escapingtheprison.swf",
+        "img": "bank.jpg"
+      },
+      {
+        "name": "Stealing the Diamond",
+        "path": "data/stealingthediamond.swf",
+        "img": "stealing.jpg"
+      },
+      {
+        "name": "The Fancy Pants Adventures",
+        "path": "data/fancypantsadventure.swf",
+        "img": "fancypants.jpg"
+      },
+      {
+        "name": "Handless Millionaire",
+        "path": "data/handlessmillionaire.swf",
+        "img": "hand.jpg"
+      },
+      {
+        "name": "Happy Wheels Flash",
+        "path": "data/hw.swf",
+        "img": "hw.jpg"
+      },
+      {
+        "name": "Hobo",
+        "path": "data/hobo.swf",
+        "img": "hobo.jpg"
+      },
+      {
+        "name": "Hobo 2: Prison Brawl",
+        "path": "data/hoboprisonbrawl.swf",
+        "img": "hobo2.jpg"
+      },
+      {
+        "name": "Interactive Buddy",
+        "path": "data/ib.swf",
+        "img": "ib.jpg"
+      },
+      {
+        "name": "Learn to Fly",
+        "path": "data/Learn2Fly.swf",
+        "img": "learn2fly.jpg"
+      },
+      {
+        "name": "Miami Shark",
+        "path": "data/miami-shark.swf",
+        "img": "miamishark.jpg"
+      },
+      {
+        "name": "New York Shark",
+        "path": "data/new-york-shark.swf",
+        "img": "NYshark.jpg"
+      },
+      {
+        "name": "This is the Only Level",
+        "path": "data/this_is_the_only_level.swf",
+        "img": "only.jpg"
+      },
+      {
+        "name": "Pac-Man",
+        "path": "data/pacman.swf",
+        "img": "Pacman.jpg"
+      },
+      {
+        "name": "Papa's Burgeria",
+        "path": "data/papaburger.swf",
+        "img": "papaburger.jpg"
+      },
+      {
+        "name": "Papa's Freezeria",
+        "path": "data/papasfreezeria.swf",
+        "img": "papafreeze.jpg"
+      },
+      {
+        "name": "Papa's Pancakeria",
+        "path": "data/papaspancakeria.swf",
+        "img": "papapancake.jpg"
+      },
+      {
+        "name": "Papa's Pizzaria",
+        "path": "data/papaspizzeria.swf",
+        "img": "papapizza.jpg"
+      },
+      {
+        "name": "Papa's Pastaria",
+        "path": "data/papapasta.swf",
+        "img": "papapasta.jpg"
+      },
+      {
+        "name": "Papa's Sushiria",
+        "path": "data/papassushiria.swf",
+        "img": "papasushi.jpg"
+      },
+      {
+        "name": "Papa's Tacomia",
+        "path": "data/papastacomia.swf",
+        "img": "papataco.jpg"
+      },
+      {
+        "name": "Papa's Wingeria",
+        "path": "data/papawing.swf",
+        "img": "papawing.jpg"
+      },
+      {
+        "name": "Pong",
+        "path": "data/pong.swf",
+        "img": "pong.jpg"
+      },
+      {
+        "name": "Portal: The Flash Version",
+        "path": "data/Portal.swf",
+        "img": "portal.jpg"
+      },
+      {
+        "name": "Super Mario 63",
+        "path": "data/supermario63.swf",
+        "img": "mario63.jpg"
+      },
+      {
+        "name": "Super Mario Flash",
+        "path": "data/supermarioflash.swf",
+        "img": "supermarioflash.jpg"
+      },
+      {
+        "name": "Mario Combat",
+        "path": "data/Mario_Combat.swf",
+        "img": "mariocombat.jpg"
+      },
+      {
+        "name": "Meat Boy",
+        "path": "data/meatboy.swf",
+        "img": "meatboy.jpg"
+      },
+      {
+        "name": "Mini Putt",
+        "path": "data/miniputt.swf",
+        "img": "miniputt.jpg"
+      },
+      {
+        "name": "Mutilate a Doll 2",
+        "path": "data/mutilate-a-doll-2.swf",
+        "img": "mad2.jpg"
+      },
+      {
+        "name": "My Friend Pedro",
+        "path": "data/my-friend-pedro.swf",
+        "img": "pedro.jpg"
+      },
+      {
+        "name": "Gunblood",
+        "path": "data/gunblood.swf",
+        "img": "gunblood.jpg"
+      },
+      {
+        "name": "Riddle School",
+        "path": "data/riddleschool.swf",
+        "img": "riddleschool.jpg"
+      },
+      {
+        "name": "Riddle School 2",
+        "path": "data/riddleschool2.swf",
+        "img": "riddleschool2.jpg"
+      },
+      {
+        "name": "Riddle School 3",
+        "path": "data/rs3.swf",
+        "img": "rs3.jpg"
+      },
+      {
+        "name": "Run",
+        "path": "data/run.swf",
+        "img": "run.jpg"
+      },
+      {
+        "name": "Run 2",
+        "path": "data/run2.swf",
+        "img": "run2.jpg"
+      },
+      {
+        "name": "Smile War",
+        "path": "data/smileyswar.swf",
+        "img": "smilewar.jpg"
+      },
+      {
+        "name": "Stick RPG",
+        "path": "data/stickrpg.swf",
+        "img": "stickrpg.jpg"
+      },
+      {
+        "name": "Tetris",
+        "path": "data/tetris.swf",
+        "img": "tetris.jpg"
+      },
+      {
+        "name": "The Impossible Quiz",
+        "path": "data/TheImpossibleQuiz.swf",
+        "img": "quiz.jpg"
+      },
+      {
+        "name": "The Impossible Quiz 2",
+        "path": "data/theimpossiblequiz2.swf",
+        "img": "quiz2.jpg"
+      },
+      {
+        "name": "The World's Hardest Game",
+        "path": "data/theworldshardestgame.swf",
+        "img": "hardestgame.jpg"
+      },
+      {
+        "name": "The World's Hardest Game 2",
+        "path": "data/theworldshardestgame2.swf",
+        "img": "hardestgame2.jpg"
+      },
+      {
+        "name": "Toss the Turtle",
+        "path": "data/toss-the-turtle.swf",
+        "img": "turtle.jpg"
+      },
+      {
+        "name": "Ultimate Flash Sonic",
+        "path": "data/sonicflash.swf",
+        "img": "sonic.jpg"
+      },
+      {
+        "name": "Vex",
+        "path": "data/vex.swf",
+        "img": "vex.jpg"
+      },
+      {
+        "name": "Vex 2",
+        "path": "data/vex2.swf",
+        "img": "vex2.jpg"
+      },
+      {
+        "name": "Vex 3",
+        "path": "data/vex3.swf",
+        "img": "vex3.jpg"
+      },
+      {
+        "name": "Yeti Sports: Pingu Throw",
+        "path": "data/yetisports.swf",
+        "img": "yeti.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Other",
+    "games": [
+      {
+        "name": "1v1.lol",
+        "path": "miscgame/1v1lol.html",
+        "img": "1v1lol.jpg"
+      },
+      {
+        "name": "2048",
+        "path": "data/2048/index.html",
+        "img": "2048.jpg"
+      },
+      {
+        "name": "Basketball Stars",
+        "path": "data/bstars/index.html",
+        "img": "bstars.jpg"
+      },
+      {
+        "name": "BlackJack",
+        "path": "data/blackjack/index.html",
+        "img": "blackjack.jpg"
+      },
+      {
+        "name": "Block Blast",
+        "path": "data/blockblast/index.html",
+        "img": "blockblast.jpg"
+      },
+      {
+        "name": "Click Test",
+        "path": "data/click/index.html",
+        "img": "click.jpg"
+      },
+      {
+        "name": "Cookie Clicker",
+        "path": "data/cookieclicker/index.html",
+        "img": "cookie.jpg"
+      },
+      {
+        "name": "Crossy Road",
+        "path": "data/crossyroad/index.html",
+        "img": "crossyroad.jpg"
+      },
+      {
+        "name": "Cut The Rope",
+        "path": "data/ctr/index.html",
+        "img": "ctr.jpg"
+      },
+      {
+        "name": "Drive Mad",
+        "path": "data/drivemad/1/index.html",
+        "img": "drivemad.jpg"
+      },
+      {
+        "name": "FNAF",
+        "path": "data/fnaf/1/index.html",
+        "img": "fnaf.jpg"
+      },
+      {
+        "name": "FNAF 2",
+        "path": "data/fnaf/2/index.html",
+        "img": "fnaf2.jpg"
+      },
+      {
+        "name": "FNAF 3",
+        "path": "data/fnaf/3/index.html",
+        "img": "fnaf3.jpg"
+      },
+      {
+        "name": "Geometry Dash",
+        "path": "data/geometrydash/lite/index.html",
+        "img": "geodashlite.jpg"
+      },
+      {
+        "name": "Geometry Dash: Subzero",
+        "path": "data/geometrydash/subzero/index.html",
+        "img": "geodashsub.jpg"
+      },
+      {
+        "name": "Geometry Dash: Word",
+        "path": "data/geometrydash/world/index.html",
+        "img": "geodashworld.jpg"
+      },
+      {
+        "name": "Dinosaur Game",
+        "path": "data/dino/index.html",
+        "img": "googdino.jpg"
+      },
+      {
+        "name": "Snake",
+        "path": "data/snake/index.html",
+        "img": "googsnake.jpg"
+      },
+      {
+        "name": "Grand Shift Auto",
+        "path": "data/gta/index.html",
+        "img": "gta.jpg"
+      },
+      {
+        "name": "Happy Wheels",
+        "path": "data/hw/index.html",
+        "img": "hw.jpg"
+      },
+      {
+        "name": "Mari0",
+        "path": "data/mari0/index.html",
+        "img": "mario.jpg"
+      },
+      {
+        "name": "Minesweeper",
+        "path": "data/minesweep/index.html",
+        "img": "minesweep.jpg"
+      },
+      {
+        "name": "Eaglercraft",
+        "path": "data/eaglercraft/index.html",
+        "img": "eagler.jpg"
+      },
+      {
+        "name": "MotoX3M",
+        "path": "data/motox3m/index.html",
+        "img": "motox3m.jpg"
+      },
+      {
+        "name": "MotoX3M 2",
+        "path": "data/motox3m2/index.html",
+        "img": "motox3m2.jpg"
+      },
+      {
+        "name": "Retro Bowl",
+        "path": "data/retrobowl/index.html",
+        "img": "retrobowl.jpg"
+      },
+      {
+        "name": "Retro Bowl College",
+        "path": "data/retrobowlcollege/index.html",
+        "img": "retrobowlcollege.jpg"
+      },
+      {
+        "name": "Rooftop Snipers",
+        "path": "data/RoofSnipe/index.html",
+        "img": "roofsnipe.jpg"
+      },
+      {
+        "name": "Run 3",
+        "path": "data/run3/index.html",
+        "img": "run3.jpg"
+      },
+      {
+        "name": "Slope",
+        "path": "data/slope/index.html",
+        "img": "slope.jpg"
+      },
+      {
+        "name": "Spacebar Clicker",
+        "path": "data/spacebarclick/index.html",
+        "img": "spacebarclick.jpg"
+      },
+      {
+        "name": "Spacebar Smasher",
+        "path": "data/spacebar/index.html",
+        "img": "spacebar.jpg"
+      },
+      {
+        "name": "Subway Surfers",
+        "path": "data/SubwaySurfers/index.html",
+        "img": "subway.jpg"
+      },
+      {
+        "name": "Super Mario 64 WASM",
+        "path": "data/sm64/index.html",
+        "img": "sm64.jpg"
+      },
+      {
+        "name": "Tomb of the Mask",
+        "path": "data/totm/index.html",
+        "img": "totm.jpg"
+      },
+      {
+        "name": "Windows 11 Simple Emulator",
+        "path": "win11turbo.html",
+        "img": "win11turbo.jpg"
+      },
+      {
+        "name": "Wolfenstein JS",
+        "path": "data/wolfen/index.html",
+        "img": "wolfjs.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Multiplayer Games",
+    "games": [
+      {
+        "name": "2v2.io",
+        "path": "data/2v2/index.html",
+        "img": "2v2.jpg"
+      },
+      {
+        "name": "Poxel.io",
+        "path": "data/poxel/index.html",
+        "img": "poxel.jpg"
+      }
+    ]
+  },
+  {
+    "title": "DOS Games",
+    "games": [
+      {
+        "name": "DOOM",
+        "path": "data/dosbox/?soft=DOOM",
+        "img": "doom.jpg"
+      },
+      {
+        "name": "DOOM 2",
+        "path": "data/dosbox/?soft=DOOM2",
+        "img": "doom2.jpg"
+      },
+      {
+        "name": "OREGON TRAIL",
+        "path": "data/dosbox/?soft=OREGON",
+        "img": "oregon.jpg"
+      },
+      {
+        "name": "QUAKE",
+        "path": "data/dosbox/?soft=QUAKE",
+        "img": "quake.jpg"
+      },
+      {
+        "name": "ROGUE",
+        "path": "data/dosbox/?soft=ROGUE",
+        "img": "rogue.jpg"
+      },
+      {
+        "name": "Wolfenstein 3D",
+        "path": "data/dosbox/?soft=WOLF3D",
+        "img": "wolfen.jpg"
+      }
+    ]
+  },
+  {
+    "title": "NES Games",
+    "games": [
+      {
+        "name": "Batman",
+        "path": "emu/data/nes/batman.nes",
+        "img": "batman.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "Contra",
+        "path": "emu/data/nes/contra.nes",
+        "img": "contracool.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "Double Dragon",
+        "path": "emu/data/nes/Double_dragon.nes",
+        "img": "doubled.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "Duck Tales",
+        "path": "emu/data/nes/ducktales.nes",
+        "img": "ducktales.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "Friday the 13th",
+        "path": "emu/data/nes/fridaythe13th.nes",
+        "img": "f13.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "Mega Man 2",
+        "path": "emu/data/nes/megaman2.nes",
+        "img": "megamandos.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "Mike Tysons Punch Out",
+        "path": "emu/data/nes/mike-tysons-punch-out.nes",
+        "img": "mtyson.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "River City Ransom",
+        "path": "emu/data/nes/ransom.nes",
+        "img": "rivercity.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "Super Mario Bros.",
+        "path": "emu/data/nes/supermariobros.nes",
+        "img": "mariones.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "Super Mario Bros. 2",
+        "path": "emu/data/nes/supermariobros2.nes",
+        "img": "sm2.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "Super Mario Bros. 3",
+        "path": "emu/data/nes/Supermariobros3.nes",
+        "img": "sm3.jpg",
+        "core": "nes"
+      },
+      {
+        "name": "The Legend of Zelda",
+        "path": "emu/data/nes/zelda.nes",
+        "img": "zelda.jpg",
+        "core": "nes"
+      }
+    ]
+  },
+  {
+    "title": "SNES Games",
+    "games": [
+      {
+        "name": "Ultimate Mortal Kombat 3",
+        "path": "emu/data/umk3.sfc",
+        "img": "umk3.jpg",
+        "core": "snes"
+      }
+    ]
+  },
+  {
+    "title": "GBA Games",
+    "games": [
+      {
+        "name": "Donkey Kong Country",
+        "path": "emu/data/gba/dkc.gba",
+        "img": "donkongc.jpg",
+        "core": "gba"
+      },
+      {
+        "name": "DOOM",
+        "path": "emu/data/gba/dm.gba",
+        "img": "doom.jpg",
+        "core": "gba"
+      },
+      {
+        "name": "Grand Theft Auto",
+        "path": "emu/data/gba/gta.gba",
+        "img": "gtagba.jpg",
+        "core": "gba"
+      },
+      {
+        "name": "NBA Jam 2002",
+        "path": "emu/data/gba/nbaj.gba",
+        "img": "nbaj.jpg",
+        "core": "gba"
+      },
+      {
+        "name": "Pokemon Emerald",
+        "path": "emu/data/gba/pokemonemerald.gba",
+        "img": "pokemonemerald.jpg",
+        "core": "gba"
+      },
+      {
+        "name": "Street Fighter II TURBO",
+        "path": "emu/data/gba/ssf2t.gba",
+        "img": "sf2t.jpg",
+        "core": "gba"
+      },
+      {
+        "name": "Street Fighter Alpha III",
+        "path": "emu/data/gba/ssf3a.gba",
+        "img": "sfa3.jpg",
+        "core": "gba"
+      },
+      {
+        "name": "Super Mario World",
+        "path": "emu/data/gba/supermarioworld.gba",
+        "img": "supermarioadvance2.jpg",
+        "core": "gba"
+      }
+    ]
+  },
+  {
+    "title": "N64 Games",
+    "games": [
+      {
+        "name": "Goldeneye 007",
+        "path": "emu/data/goldeneye007.z64",
+        "img": "goldeneye.jpg",
+        "core": "n64"
+      },
+      {
+        "name": "Mario Kart 64",
+        "path": "emu/data/mkart64.n64",
+        "img": "mkart64.jpg",
+        "core": "n64"
+      },
+      {
+        "name": "WWF No Mercy",
+        "path": "emu/data/WWF-No-Mercy.z64s",
+        "img": "wwf.jpg",
+        "core": "n64"
+      }
+    ]
+  },
+  {
+    "title": "DS Games",
+    "games": [
+      {
+        "name": "Mario Kart DS",
+        "path": "emu/data/Mario-Kart-DS.nds",
+        "img": "mariokartds.jpg",
+        "core": "nds"
+      }
+    ]
+  }
+]
