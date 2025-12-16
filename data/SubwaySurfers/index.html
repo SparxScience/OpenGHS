@@ -11,7 +11,6 @@
 			sandbox allow-scripts allow-same-origin;
 	    ">
     <meta charset="UTF-8">
-    <script src="js/poki-sdk.js"></script>
     
     <meta http-equiv="content-type" content="text/html; charset=UTF8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -75,20 +74,47 @@
     </style>
 </head>
 <body>
-    <script>
-        window.NOSW = true;
-        window.GAME_CONFIG = {
-            pokiSdkDebug: false,
-            leaderboard: 'mockup',
-            bundlesPath: './bundles',
-        }
-        delete Array.prototype.group;
-    </script>
-    <div id="message">
-        <h1>Loading</h1>
-        <h1 class="dot one">.</h1><h1 class="dot two">.</h1><h1 class="dot three">.</h1>
-    </div>
-    <script src="js/loading.js"></script>
-    <script src="js/boot.js"></script>
+	<script>
+	  // create sandboxed iframe that allows scripts but disallows top navigation
+	  const iframe = document.createElement('iframe');
+	  // allow-scripts but NOT allow-top-navigation
+	  iframe.setAttribute('sandbox', 'allow-scripts');
+	  iframe.srcdoc = `
+	    <!doctype html>
+	    <body>
+	      <script>
+	        // this third-party script runs here. it can do heavy work but cannot navigate the parent.
+	        // if it needs to reach APIs, use postMessage to the parent.
+	        // example malicious attempt:
+	        // window.top.location = 'https://poki.com/sitelock'; // will be blocked by the sandbox
+			
+			<script src="js/poki-sdk.js"></script>
+		    <script>
+		        window.NOSW = true;
+		        window.GAME_CONFIG = {
+		            pokiSdkDebug: false,
+		            leaderboard: 'mockup',
+		            bundlesPath: './bundles',
+		        }
+		        delete Array.prototype.group;
+		    </script>
+		    <div id="message">
+		        <h1>Loading</h1>
+		        <h1 class="dot one">.</h1><h1 class="dot two">.</h1><h1 class="dot three">.</h1>
+		    </div>
+		    <script src="js/loading.js"></script>
+		    <script src="js/boot.js"></script>
+	      <\/script>
+	    </body>
+	  `;
+	  document.body.appendChild(iframe);
+	
+	  // parent listens by postMessage to receive safe results from the iframe
+	  window.addEventListener('message', e => {
+	    if (e.origin === location.origin) /*or other check*/ {
+	      // handle data from iframe
+	    }
+	  });
+	</script>
 </body>
 </html>
